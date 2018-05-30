@@ -8,18 +8,21 @@ clear all;
 % read binary image
 binary_image = imread('img/Bild11_U.bmp');
 
-% calculate centroid of the image
-centerImage = func_centroid(binary_image);
-
-% coordinates of the boundary
-neighbors = 8;
-B = bwboundaries(binary_image,neighbors);
-
+% plotting original image
 fig1 = figure;
 subplot(2,2,1)
 imshow(binary_image)
 title('original')
 hold on
+
+% calculate centroid of the image
+centroidImage = func_centroid(binary_image);
+
+% coordinates of the boundary
+neighbors = 8;
+B = bwboundaries(binary_image,neighbors);
+
+
 
 % convert boundary pixel into a complex signal
 % plotting of the boundary
