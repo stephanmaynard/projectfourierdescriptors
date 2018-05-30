@@ -22,7 +22,10 @@ centroidImage = func_centroid(binary_image);
 neighbors = 8;
 B = bwboundaries(binary_image,neighbors);
 
-
+% fillthe boundary vectors with zeros until the vector length is 2^n
+diffPeriod = 2^nextpow2(length(B{1})) - length(B{1});
+BlengthAdjust = cat(1,B{1},zeros(diffPeriod,2));
+B{1} = BlengthAdjust;
 
 % convert boundary pixel into a complex signal
 % plotting of the boundary
@@ -39,7 +42,7 @@ hold off
 
 % find exponent p for 2^p number larger then vector length
 p = nextpow2(length(boundary_complex));
-p = p + 4;   % increase the the exponent for more FFT coefficients
+ p = p + 0;   % increase the the exponent for more FFT coefficients
 
 
 % FFT of the Signal
@@ -47,13 +50,13 @@ boundaryFFT = fft(boundary_complex,2^p);
 %boundaryFFT(1)= -1 + 4j;
 boundaryFFTnorm = boundaryFFT;
 %boundaryFFT = fftshift(boundaryFFT);    % shift to center
-boundaryFFTnorm = boundaryFFTnorm./boundaryFFTnorm(1); % normalise
+boundaryFFTnorm = boundaryFFTnorm./boundaryFFTnorm(1); % normalise on the first fourier descriptor
 
 
 
 % test rücktransformation
 periodLen = length(boundaryFFTnorm);
-numDeskrip =periodLen -1;                  % number of fourier descriptors
+numDeskrip = 127;                  % number of fourier descriptors
 deskriptoren = zeros(periodLen,1); % 
 absolutFFT = abs(boundaryFFTnorm); % absolute value of the transformed signal
 phaseFFT = angle(boundaryFFTnorm); % phase of the transformed signal
