@@ -19,8 +19,9 @@ hold on
 centroidImage = func_centroid(binary_image);
 
 % coordinates of the boundary
-neighbors = 8;
+neighbors = 4;
 B = bwboundaries(binary_image,neighbors);
+%B = fliplr(B);
 
 % fillthe boundary vectors with zeros until the vector length is 2^n
 diffPeriod = 2^nextpow2(length(B{1})) - length(B{1});
@@ -34,7 +35,7 @@ for k = 1:length(B)
    boundary_complex = complex(B{k}(:,1),B{k}(:,2));  % convert boundary in complex numbers
  %  freemanCodeBoundary(k) = freemancc(B{k});
    subplot(2,2,2);
-   plot(boundary(:,2), boundary(:,1), 'k', 'LineWidth', 2)
+   plot(boundary(1:end,2), boundary(1:end,1), 'k', 'LineWidth', 2)
 end
 title('contur')
 hold off
@@ -42,7 +43,7 @@ hold off
 
 % find exponent p for 2^p number larger then vector length
 p = nextpow2(length(boundary_complex));
- p = p + 0;   % increase the the exponent for more FFT coefficients
+ p = p + 1;   % increase the the exponent for more FFT coefficients
 
 
 % FFT of the Signal
@@ -50,13 +51,14 @@ boundaryFFT = fft(boundary_complex,2^p);
 %boundaryFFT(1)= -1 + 4j;
 boundaryFFTnorm = boundaryFFT;
 %boundaryFFT = fftshift(boundaryFFT);    % shift to center
-boundaryFFTnorm = boundaryFFTnorm./boundaryFFTnorm(1); % normalise on the first fourier descriptor
+
+boundaryFFTnorm = boundaryFFTnorm./boundaryFFTnorm(2); % normalise on the first fourier descriptor
 
 
 
 % test rücktransformation
 periodLen = length(boundaryFFTnorm);
-numDeskrip = 127;                  % number of fourier descriptors
+numDeskrip = 5;                  % number of fourier descriptors
 deskriptoren = zeros(periodLen,1); % 
 absolutFFT = abs(boundaryFFTnorm); % absolute value of the transformed signal
 phaseFFT = angle(boundaryFFTnorm); % phase of the transformed signal
@@ -73,13 +75,13 @@ for l = 1 : periodLen
    % exp iφ1 + 2πip/P 
 end    
 
-
+%
 subplot(2,2,4)
 plot(deskriptoren(:,1))
 title('descriptors')
 
 % Inverse FFT of the Signal
-numFourierDeskrip = 2^p;
+numFourierDeskrip = periodLen;
 boundaryIfft = ifft(boundaryFFT(1:numFourierDeskrip));
 fftImage(:,1) = real(boundaryIfft);
 fftImage(:,2) = imag(boundaryIfft);
